@@ -27,54 +27,38 @@
 	using namespace std;
 	//thread includes
 	#include "ThreadClass.h"
-	#include "boat-monitor.h"
+	#define EOD -1
 
-	class Canible:public Thread{
+	class Row:public Thread{
 	public:
-		Canible(int n, Boat* B, int* END, Semaphore* PB);//constructor
-		char* getName();
+		Row(int* values, int m, Semaphore* PB);
 	private:
-		std::string out;
-		char buf[400];
-		char* name;
-		void ThreadFunc(void);
-		Boat* b;
-		int uid;
-		std::string formatS;
-		int* end;
-		Semaphore* printBlock;
+		Semaphore* pb;
+		int values[];
+		void TheadFunc(void);
+		SynOneToOneChannel* channel;
 	};
 
-	class Missionary:public Thread{
+	class Col:public Thread{
 	public:
-		Missionary(int n, Boat* B, int* END, Semaphore* PB);//constructor
-		char* getName();
+		Col(int* values, int n);
 	private:
-		std::string out;
-		char buf[400];
-		void ThreadFunc(void);
-		char* name;
-		Boat* b;
-		int uid;
-		std::string formatS;
-		int* end;
-		Semaphore* printBlock;
+		Semaphore* pb;
+		int values[];
+		void TheadFunc(void);
+		SynOneToOneChannel* channel;
 	};
 
-	class Ship:public Thread{
+	class Index:public Thread{
 	public:
-		Ship(int b, Boat* B, int* END, Semaphore* PB);
+		Index(int** C, int M, int N, int row,int col, Semaphore* PB);
 	private:
-		std::string out;
-		char buf[400];
-		void ThreadFunc(void);
-		Boat* b;
-		int trips;
-		std::string formatS;
-		int* end;
-		Semaphore* printBlock;
-		char* p[3];		//the passenger list
-		int load;
+		int row,col,m,n;
+		Semaphore* pb;
+		int** c;
+		void TheadFunc(void);
+		int value = 0;
+		SynOneToOneChannel* left,down;
 	};
 
 #endif
