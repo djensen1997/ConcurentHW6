@@ -58,7 +58,7 @@ int main(int argc, char** argv){
 		char name[100];
 		sprintf(name, "Channel%d-%d", (i+1)*(b+1), (i+1)*(b+1) + 1);
 		rowChannel[i+1][0] = new SynOneToOneChannel(name, (i+1)*(b+1), (i+1)*(b+1) + 1);
-		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, channel[i+1][0]);
+		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, rowChannel[i+1][0]);
 	}
 
 	Col* col[b];
@@ -70,7 +70,7 @@ int main(int argc, char** argv){
 		char name[100];
 		sprintf(name, "Channel%d-%d", i+1, (b+1) + (i+1));
 		colChannel[0][i+1] = new SynOneToOneChannel(name, i+1, (b+1) + (i+1));
-		col[i] = new Col(values, a, i+1,i, channel[0][i+1]);
+		col[i] = new Col(values, a, i+1,i, colChannel[0][i+1]);
 	}
 
 	for(int i = 0; i < m; i++){
