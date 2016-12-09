@@ -30,7 +30,7 @@ int main(int argc, char** argv){
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < n; j++){
-			scanf(%d, &(A[i][j]));
+			scanf("%d", &(A[i][j]));
 		}
 	}
 	scanf("%d", &a);
@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 	int B[a][b];
 	for(int i = 0; i < a; i++){
 		for(int j = 0; j < b; j++){
-			scanf(%d, &(B[i][j]));
+			scanf("%d", &(B[i][j]));
 		}
 	}
 
