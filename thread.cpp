@@ -77,9 +77,9 @@ void Index::ThreadFunc(void){
 			value += (Down * Left);
 		}
 		//pass data along
-		if(b != 0)
-			right->Send(&Left, sizeof(int));
 		if(e != 0)
+			right->Send(&Left, sizeof(int));
+		if(b != 0)
 			down->Send(&Down, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
 		write(1,buf,strlen(buf));
