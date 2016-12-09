@@ -86,7 +86,7 @@ void Index::ThreadFunc(void){
 
 	}
 	*c = value;//set the array value to the computed value
-	sprintf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", row,col,value);
+	sprintf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", row+1,col+1,value);
 	write(1, buf, strlen(buf));
 }
 
@@ -132,7 +132,6 @@ void Row::ThreadFunc(void){
 	channel->Send(&temp, sizeof(int));
 	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r+1,r+1);
 	write(1, buf, strlen(buf));
-	free(vals);
 }
 
 
