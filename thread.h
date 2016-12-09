@@ -56,14 +56,14 @@
 
 	class Index:public Thread{
 	public:
-		Index(int* output, int row, int col, int M, int N, Semaphore* PB);
+		Index(int* output, int Row, int Col, int M, int N, Semaphore* PB);
 	private:
 		char buf[200];
 		int row,col,m,n;
 		Semaphore* pb;
 		int* c;
 		void ThreadFunc(void);
-		int value = 0;
+		int value;
 		SynOneToOneChannel* left,down,up,right;
 	};
 

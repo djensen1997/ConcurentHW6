@@ -22,26 +22,27 @@
 // FUNCTION CALLED :                                           
 // 		sprintf, srand
 // ----------------------------------------------------------- 
-Index::Index(int* C, int M, int N, int row,int col, Semaphore* PB)
-:c(C), m(M), n(N), r(row), c(col), pb(PB){
+Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
+:c(C), m(M), n(N), row(Row), col(Col), pb(PB){
 	//compute threadid's for all threads around this one
 	UserDefinedThreadID = (r+1)*m + col;
-	Thread P[3,4] started
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
-	int leftID = (r+1)*m + col - 1;
-	int downID = (r+1)*m + col + r;
-	int upID = (r+1)*m + col - r;
+	int leftID = (row+1)*m + col - 1;
+	int downID = (row+1)*m + col + row;
+	int upID = (row+1)*m + col - row;
 	if(upID < 0){
 		upID = 60 + col;
 	}
 	if(UserDefinedThreadID%10 == 0){
-		leftID = 60 + (r+1)*10;
+		leftID = 60 + (row+1)*10;
 	}
-	int rightID = (r+1)*m + col + 1;
+	int rightID = (row+1)*m + col + 1;
 	//make the channels
 	char leftName[100];
 	char downName[100];
+	char rightName[100];
+	char upName[100];
 	sprintf(leftName, "Channel%d-%d", leftID,UserDefinedThreadID);
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
 	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
@@ -56,7 +57,7 @@ Index::Index(int* C, int M, int N, int row,int col, Semaphore* PB)
 	
 	up = new SynOneToOneChannel(upName, upID, UserDefinedThreadID);
 	left = new SynOneToOneChannel(leftName, leftID, UserDefinedThreadID);
-	
+	value = 0;
 }
 
 
@@ -79,12 +80,12 @@ void Index::ThreadFunc(void){
 	int end = 0;
 	while(end == 0){
 		//get information
-		up->Recieve(Down, sizeof(int));
-		left->Recieve(Left, sizeof(int));
-		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",r+1,c+1,Down,Left);
+		up->Receive(Down, sizeof(int));
+		left->Receive(Left, sizeof(int));
+		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
 		write(1, buf, strlen(buf));
 		//decide to end the loop or use data
-		if(Down == EOD || Left == EDO){
+		if(Down == E)D || Left == EOD){
 			end = 1;
 		}else{
 			value += (Down * Left);
@@ -92,12 +93,12 @@ void Index::ThreadFunc(void){
 		//pass data along
 		right->Send(&Left, sizeof(int));
 		down->Send(&Down, sizeof(int));
-		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",r+1,c+1,Down,Left);
+		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
 		write(1,buf,strlen(buf));
 
 	}
 	*c = value;//set the array value to the computed value
-	spirntf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", r,c,value);
+	sprintf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", row,col,value);
 	write(1, buf, strlen(buf));
 	Exit();//terminate the thread
 }
@@ -140,8 +141,8 @@ void Row::ThreadFunc(void){
 	//Row thread r[3] sent 5 to P[3,1]
 	Thread::ThreadFunc();
 	for(int i = 0; i < m; i++){
-		channel->Send(vals[i], sizeof(int));
-		spirntf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
+		channel->Send(&(vals[i]), sizeof(int));
+		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
 		write(1, buf, strlen(buf));
 	}
 	channel->Send(EOD, sizeof(int));
@@ -171,7 +172,7 @@ Col::Col(int* values, int col, int N, Semaphore* PB)
 	int downID = UserDefinedThreadID - 60;
 	char downName[100];
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
-	channel = new SynOneToOneChannel(rightName, UserDefinedThreadID, downID);
+	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
 }
 
 
@@ -187,8 +188,8 @@ Col::Col(int* values, int col, int N, Semaphore* PB)
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
-		channel->Send(vals[i], sizeof(int));
-		spirntf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
+		channel->Send(&(vals[i]), sizeof(int));
+		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
 		write(1, buf, strlen(buf));
 	}
 	channel->Send(EOD, sizeof(int));
