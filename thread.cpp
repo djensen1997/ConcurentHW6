@@ -91,8 +91,8 @@ void Index::ThreadFunc(void){
 			value += (Down * Left);
 		}
 		//pass data along
-		right->Send(&Left, sizeof(int));
-		down->Send(&Down, sizeof(int));
+		right->Send((void*)&Left, sizeof(int));
+		down->Send((void*)&Down, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
 		write(1,buf,strlen(buf));
 
@@ -141,11 +141,12 @@ void Row::ThreadFunc(void){
 	//Row thread r[3] sent 5 to P[3,1]
 	Thread::ThreadFunc();
 	for(int i = 0; i < m; i++){
-		channel->Send(&(vals[i]), sizeof(int));
+		channel->Send((void*)(&(vals[i])), sizeof(int));
 		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
 		write(1, buf, strlen(buf));
 	}
-	channel->Send(EOD, sizeof(int));
+	int temp = EOD;
+	channel->Send((void*)&temp, sizeof(int));
 	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r,r);
 	write(1, buf, strlen(buf));
 	Exit();
@@ -188,11 +189,12 @@ Col::Col(int* values, int col, int N, Semaphore* PB)
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
-		channel->Send(&(vals[i]), sizeof(int));
+		channel->Send((void*)&(vals[i]), sizeof(int));
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
 		write(1, buf, strlen(buf));
 	}
-	channel->Send(EOD, sizeof(int));
+	int temp = EOD;
+	channel->Send((void*)&temp, sizeof(int));
 	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c,c);
 	write(1, buf, strlen(buf));
 	Exit();
