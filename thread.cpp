@@ -179,7 +179,7 @@ Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
-	int downID = UserDefinedThreadID - M;
+	int downID = UserDefinedThreadID - m;
 	char downName[100];
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
 	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
