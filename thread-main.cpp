@@ -30,7 +30,7 @@ int main(int argc, char** argv){
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < n; j++){
-			A[i][j] << cin;
+			scanf(%d, &(A[i][j]);
 		}
 	}
 	a << cin;
@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 	int B[a][b];
 	for(int i = 0; i < a; i++){
 		for(int j = 0; j < b; j++){
-			B[i][j] << cin;
+			scanf(%d, &(B[i][j]);
 		}
 	}
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 	Row* row[b];
 	for(int i = 0; i < m; i++){
 
-		row[i] = new Row(&A[i], i, b, pb);
+		row[i] = new Row(&(A[i][0]), i, b, pb);
 		row[i]->Begin();
 	}
 
