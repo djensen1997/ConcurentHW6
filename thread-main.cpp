@@ -23,22 +23,22 @@
 int main(int argc, char** argv){
 	//get the arrays in
 	int m,n,a,b;//the first array is mxn the other is axb
-	m << cin;
-	n << cin;
+	scanf("%d", &m);
+	scanf("%d", &n);
 	int A[m][n];
 	char buf[200];
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < n; j++){
-			scanf(%d, &(A[i][j]);
+			scanf(%d, &(A[i][j]));
 		}
 	}
-	a << cin;
-	b << cin;
+	scanf("%d", &a);
+	scanf("%d", &b);
 	int B[a][b];
 	for(int i = 0; i < a; i++){
 		for(int j = 0; j < b; j++){
-			scanf(%d, &(B[i][j]);
+			scanf(%d, &(B[i][j]));
 		}
 	}
 
