@@ -81,6 +81,7 @@ void Index::ThreadFunc(void){
 	while(end == 0){
 		//get information
 		sprintf(buf, "      Thread P[%d,%d] ready to receive\n", row+1,col+1);
+		write(1, buf, strlen(buf));
 		up->Receive(&Down, sizeof(int));
 		left->Receive(&Left, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
@@ -143,6 +144,7 @@ void Row::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < m; i++){
 		sprintf(buf, "Row thread r[%d] ready to send\n", r);
+		write(1, buf, strlen(buf));
 		channel->Send((void*)(&(vals[i])), sizeof(int));
 		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
 		write(1, buf, strlen(buf));
@@ -192,6 +194,7 @@ void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
 		sprintf(buf, "   Col thread c[%d] ready to send\n", c);
+		write(1, buf, strlen(buf));
 		channel->Send((void*)&(vals[i]), sizeof(int));
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
 		write(1, buf, strlen(buf));
