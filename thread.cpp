@@ -62,11 +62,11 @@ void Index::ThreadFunc(void){
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
 	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
 	sprintf(upName, "Channel%d-%d", upID, UserDefinedThreadID);
-	if(row + 1 != M){
+	if(row + 1 != m){
 		right = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
 	}
 
-	if(col + 1 != N){
+	if(col + 1 != n){
 		down = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
 	}
 	up = new SynOneToOneChannel(upName, upID, UserDefinedThreadID);
@@ -164,10 +164,7 @@ Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 	UserDefinedThreadID = col;
 	sprintf(buf, "   Column thread c[%d] started\n",col+1);
 	write(1,buf,strlen(buf));
-	int downID = UserDefinedThreadID - M;
-	char downName[100];
-	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
-	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
+	
 }
 
 
@@ -182,6 +179,10 @@ Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
+	int downID = UserDefinedThreadID - M;
+	char downName[100];
+	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
+	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
 	for(int i = 0; i < n; i++){
 		channel->Send(&(vals[i]), sizeof(int));
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c+1,vals[i],c+1);
