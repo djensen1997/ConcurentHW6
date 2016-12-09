@@ -84,10 +84,10 @@ void Index::ThreadFunc(void){
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",r+1,c+1,Down,Left);
 		write(1, buf, strlen(buf));
 		//decide to end the loop or use data
-		if(down == EOD || left == EDO){
+		if(Down == EOD || Left == EDO){
 			end = 1;
 		}else{
-			value += (up * right);
+			value += (Down * Left);
 		}
 		//pass data along
 		right->Send(&Left, sizeof(int));
