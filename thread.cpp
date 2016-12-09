@@ -226,8 +226,9 @@ void Col::ThreadFunc(void){
 // ----------------------------------------------------------- 
 void printArray(int* array, int array_size){
 	//format stuff
-	int ln = -1; //how many numbers can be on a line
+	int ln = 20; //how many numbers can be on a line
 	char out[400]; //the output buffer, nice and large
+	int useln = 0;//used to escape code that isn't aplicible to this application
 	char formatS[] = "";
 	sprintf(out, "");
 	strcat(out, formatS);
@@ -240,7 +241,7 @@ void printArray(int* array, int array_size){
 		//are alread ln numbers on a givin line,
 		//so it prints out the line and array[i]
 		//begins the new one
-		if(((i%ln) == 0) && (i > 0)){
+		if(((i%ln) == 0) && (i > 0) && useln == 1){
 			sprintf(temp, "\n");
 			strcat(out,temp);
 			write(1, out, strlen(out));
