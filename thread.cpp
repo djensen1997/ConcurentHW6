@@ -177,7 +177,6 @@ void Col::ThreadFunc(void){
 	channel->Send(&temp, sizeof(int));
 	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c+1,c+1);
 	write(1, buf, strlen(buf));
-	free(vals);
 }
 
 // ----------------------------------------------------------- 
