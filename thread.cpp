@@ -25,8 +25,8 @@
 Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 :c(C), m(M), n(N), row(Row), col(Col), pb(PB){
 	//compute threadid's for all threads around this one
-	UserDefinedThreadID = (row*(N+1)) + col;
-	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
+	UserDefinedThreadID = ((row+1)*(N+1)) + col+1;
+	sprintf(buf, "      Thread P[%d,%d] started %d\n",row+1,col+1,UserDefinedThreadID);
 	write(1,buf,strlen(buf));
 	value = 0;
 }
@@ -50,9 +50,9 @@ void Index::ThreadFunc(void){
 	//termination condition
 	int end = 0;
 	int leftID = UserDefinedThreadID - 1;
+	int rightID = UserDefinedThreadID + 1;
 	int downID = UserDefinedThreadID + (n+1);
 	int upID = UserDefinedThreadID - (n+1);
-	int rightID = UserDefinedThreadID + 1;
 	//make the channels
 	char leftName[100];
 	char downName[100];
@@ -84,8 +84,10 @@ void Index::ThreadFunc(void){
 			value += (Down * Left);
 		}
 		//pass data along
-		right->Send(&Left, sizeof(int));
-		down->Send(&Down, sizeof(int));
+		if(col != n)
+			right->Send(&Left, sizeof(int));
+		if(row != m)
+			down->Send(&Down, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
 		write(1,buf,strlen(buf));
 
@@ -111,8 +113,8 @@ void Index::ThreadFunc(void){
 // ----------------------------------------------------------- 
 Row::Row(int* values, int row, int M, Semaphore* PB)
 :vals(values), r(row), m(M), pb(PB){
-	UserDefinedThreadID = row*m;
-	sprintf(buf, "Row thread r[%d] started\n",row+1);
+	UserDefinedThreadID = (row+1)*(m+1);
+	sprintf(buf, "Row thread r[%d] started %d\n",row+1,UserDefinedThreadID);
 	write(1,buf,strlen(buf));
 	
 }
@@ -140,9 +142,10 @@ void Row::ThreadFunc(void){
 		write(1, buf, strlen(buf));
 	}
 	int temp = EOD;
-	channel->Send((void*)&temp, sizeof(int));
+	channel->Send(&temp, sizeof(int));
 	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r+1,r+1);
 	write(1, buf, strlen(buf));
+	free(vals);
 	Exit();
 }
 
@@ -161,8 +164,8 @@ void Row::ThreadFunc(void){
 // ----------------------------------------------------------- 
 Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 :vals(values), c(col), n(N), m(M), pb(PB){
-	UserDefinedThreadID = col;
-	sprintf(buf, "   Column thread c[%d] started\n",col+1);
+	UserDefinedThreadID = col+1;
+	sprintf(buf, "   Column thread c[%d] started %d\n",col+1,UserDefinedThreadID);
 	write(1,buf,strlen(buf));
 	
 }
@@ -179,7 +182,7 @@ Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
-	int downID = UserDefinedThreadID - m;
+	int downID = UserDefinedThreadID + (m+1);
 	char downName[100];
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
 	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
@@ -189,9 +192,10 @@ void Col::ThreadFunc(void){
 		write(1, buf, strlen(buf));
 	}
 	int temp = EOD;
-	channel->Send((void*)&temp, sizeof(int));
+	channel->Send(&temp, sizeof(int));
 	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c+1,c+1);
 	write(1, buf, strlen(buf));
+	free(vals);
 	Exit();
 }
 
@@ -213,7 +217,7 @@ void printArray(int* array, int array_size){
 	sprintf(out, "");
 	strcat(out, formatS);
 	//actually output the information
-	for(int i = 0; i < ln; i++){
+	for(int i = 0; i < array_size; i++){
 		char temp[20];
 		sprintf(temp, "%4d", array[i]);
 		//i is the current number

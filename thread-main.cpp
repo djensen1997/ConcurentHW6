@@ -51,17 +51,17 @@ int main(int argc, char** argv){
 	Semaphore* pb = new Semaphore("Print Block", 1);
 	int ans[m][b];
 	Index* array[m][b];
-	Row* row[b];
+	Row* row[m];
 	for(int i = 0; i < m; i++){
 
 		row[i] = new Row(&(A[i][0]), i, b, pb);
 	}
 
-	Col* col[m];
+	Col* col[b];
 	for(int i = 0; i < b; i++){
-		int values[m];
+		int* values = (int*)malloc(sizeof(int) * a);
 		for(int j = 0; j < a; j++){
-			values[i] = B[j][i];
+			values[j] = B[j][i];
 		}
 		col[i] = new Col(values, i, m, b, pb);
 	}
