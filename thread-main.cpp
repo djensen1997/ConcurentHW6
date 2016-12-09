@@ -52,8 +52,8 @@ int main(int argc, char** argv){
 	int ans[m][b];
 	Index* array[m][b];
 	Row* row[m];
-	SynOneToOneChannel* rowChannels[m+1][b+1];
-	SynOneToOneChannel* colChannels[m+1][b+1];
+	SynOneToOneChannel* rowChannel[m+1][b+1];
+	SynOneToOneChannel* colChannel[m+1][b+1];
 	for(int i = 0; i < m; i++){
 		char name[100];
 		sprintf(name, "Channel%d-%d", (i+1)*(b+1), (i+1)*(b+1) + 1);
