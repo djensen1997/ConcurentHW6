@@ -26,6 +26,8 @@ int main(int argc, char** argv){
 	m << cin;
 	n << cin;
 	int A[m][n];
+	char buf[200];
+
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < n; j++){
 			A[i][j] << cin;
@@ -87,5 +89,27 @@ int main(int argc, char** argv){
 		}
 	}
 
+	//*** From main ***
+	cout << "*** From main ***" << endl;
+	sprintf(buf, "Matrix A: %d rows and %d columns\n", m,n);
+	write(1, buf, strlen(buf));
+	for(int i = 0; i < m; i++){
+		printArray(A[i], n);
+	}
+
+	sprintf(buf, "Matrix B: %d rows and %d columns\n", a,b);
+	write(1, buf, strlen(buf));
+	for(int i = 0; i < a; i++){
+		printArray(B[i], b);
+	}
+
+	sprintf(buf, "Matrix C: %d rows and %d columns\n", m,b);
+	write(1, buf, strlen(buf));
+	for(int i = 0; i < m; i++){
+		printArray(ans[i], n);
+	}
+
 	return 0;
 }
+
+

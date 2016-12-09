@@ -4,7 +4,8 @@
 // PROGRAM ASSIGNMENT #6                                   
 // FILE NAME : thread.h         
 // PROGRAM PURPOSE :                                           
-//    	
+//    	contains all the class/function prototypes nessisary 
+//		for competing array multiplication using channels
 // ----------------------------------------------------------- 
 
 
@@ -33,7 +34,7 @@
 	public:
 		Row(int* values, int row, int M, Semaphore* PB);
 	private:
-		char buf[100];
+		char buf[200];
 		Semaphore* pb;
 		int* vals;
 		int m, r;
@@ -45,7 +46,7 @@
 	public:
 		Col(int* values, int col, int N, Semaphore* PB);
 	private:
-		char buf[100];
+		char buf[200];
 		Semaphore* pb;
 		int* vals;
 		int n,c;
@@ -57,7 +58,7 @@
 	public:
 		Index(int* output, int row, int col, int M, int N, Semaphore* PB);
 	private:
-		char buf[100];
+		char buf[200];
 		int row,col,m,n;
 		Semaphore* pb;
 		int* c;
@@ -65,6 +66,8 @@
 		int value = 0;
 		SynOneToOneChannel* left,down,up,right;
 	};
+
+	void printArray(int* array, int array_size);
 
 #endif
 

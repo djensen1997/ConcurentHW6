@@ -4,7 +4,8 @@
 // PROGRAM ASSIGNMENT #6                                   
 // FILE NAME : thread.cpp         
 // PROGRAM PURPOSE :                                           
-//    	
+//    	Contains the implementation of array multiplication
+//		using channels
 // ----------------------------------------------------------- 
 
 #include "thread.h"
@@ -25,6 +26,9 @@ Index::Index(int* C, int M, int N, int row,int col, Semaphore* PB)
 :c(C), m(M), n(N), r(row), c(col), pb(PB){
 	//compute threadid's for all threads around this one
 	UserDefinedThreadID = (r+1)*m + col;
+	Thread P[3,4] started
+	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
+	write(1,buf,strlen(buf));
 	int leftID = (r+1)*m + col - 1;
 	int downID = (r+1)*m + col + r;
 	int upID = (r+1)*m + col - r;
@@ -75,8 +79,10 @@ void Index::ThreadFunc(void){
 	int end = 0;
 	while(end == 0){
 		//get information
-		up->recieve(Down, sizeof(int));
-		left->recieve(Left, sizeof(int));
+		up->Recieve(Down, sizeof(int));
+		left->Recieve(Left, sizeof(int));
+		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",r+1,c+1,Down,Left);
+		write(1, buf, strlen(buf));
 		//decide to end the loop or use data
 		if(down == EOD || left == EDO){
 			end = 1;
@@ -84,10 +90,15 @@ void Index::ThreadFunc(void){
 			value += (up * right);
 		}
 		//pass data along
-		right->send(&Left, sizeof(int));
-		down->send(&Down, sizeof(int));
+		right->Send(&Left, sizeof(int));
+		down->Send(&Down, sizeof(int));
+		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",r+1,c+1,Down,Left);
+		write(1,buf,strlen(buf));
+
 	}
 	*c = value;//set the array value to the computed value
+	spirntf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", r,c,value);
+	write(1, buf, strlen(buf));
 	Exit();//terminate the thread
 }
 
@@ -107,6 +118,8 @@ void Index::ThreadFunc(void){
 Row::Row(int* values, int row, int M, Semaphore* PB)
 :vals(values), r(row), m(M), pb(PB){
 	UserDefinedThreadID = 60 + (r+1)*10;
+	sprintf(buf, "Row thread r[%d] started\n",row);
+	write(1,buf,strlen(buf));
 	int rightID = (r+1)*m;
 	char rightName[100];
 	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
@@ -124,11 +137,16 @@ Row::Row(int* values, int row, int M, Semaphore* PB)
 // 		sprintf, srand, Cannel.send, Cannel.recieve
 // ----------------------------------------------------------- 
 void Row::ThreadFunc(void){
+	//Row thread r[3] sent 5 to P[3,1]
 	Thread::ThreadFunc();
 	for(int i = 0; i < m; i++){
-		channel->send(vals[i], sizeof(int));
+		channel->Send(vals[i], sizeof(int));
+		spirntf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
+		write(1, buf, strlen(buf));
 	}
-	channel->send(EOD, sizeof(int));
+	channel->Send(EOD, sizeof(int));
+	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r,r);
+	write(1, buf, strlen(buf));
 	Exit();
 }
 
@@ -148,6 +166,8 @@ void Row::ThreadFunc(void){
 Col::Col(int* values, int col, int N, Semaphore* PB)
 :vals(values), c(col), n(N), pb(PB){
 	UserDefinedThreadID = 60 + col;
+	sprintf(buf, "   Column thread c[%d] started\n",col);
+	write(1,buf,strlen(buf));
 	int downID = UserDefinedThreadID - 60;
 	char downName[100];
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
@@ -164,11 +184,57 @@ Col::Col(int* values, int col, int N, Semaphore* PB)
 // FUNCTION CALLED :                                           
 // 		sprintf, srand, Cannel.send, Cannel.recieve
 // ----------------------------------------------------------- 
-void Row::ThreadFunc(void){
+void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
-		channel->send(vals[i], sizeof(int));
+		channel->Send(vals[i], sizeof(int));
+		spirntf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
+		write(1, buf, strlen(buf));
 	}
-	channel->send(EOD, sizeof(int));
+	channel->Send(EOD, sizeof(int));
+	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c,c);
+	write(1, buf, strlen(buf));
 	Exit();
+}
+
+// ----------------------------------------------------------- 
+// FUNCTION  printarray :                         
+//    prints all the integers in a givin array                            
+// PARAMETER USAGE :                                           
+//    array: the array of integers to print
+//	  array_size: the size of the givin array
+//	  rowSize: the size of the row of the array being printed out       
+// FUNCTION CALLED :                                           
+//    sprintf, strcat, write         
+// ----------------------------------------------------------- 
+void printArray(int* array, int array_size){
+	//format stuff
+	int ln = 20; //how many numbers can be on a line
+	char out[400]; //the output buffer, nice and large
+	char formatS[] = "";
+	sprintf(out, "");
+	strcat(out, formatS);
+	//actually output the information
+	for(int i = 0; i < ln; i++){
+		char temp[20];
+		sprintf(temp, "%4d", array[i]);
+		//i is the current number
+		//if i%ln is 0, that means that there
+		//are alread ln numbers on a givin line,
+		//so it prints out the line and array[i]
+		//begins the new one
+		if(((i%ln) == 0) && (i > 0)){
+			sprintf(temp, "\n");
+			strcat(out,temp);
+			write(1, out, strlen(out));
+			sprintf(out, "");
+			strcat(out, formatS);
+			sprintf(temp, "%4d", array[i]);
+		}else{
+			strcat(out, temp);
+		}
+	}
+	//print out the last line
+	strcat(out, "\n");
+	write(1, out, strlen(out));
 }
