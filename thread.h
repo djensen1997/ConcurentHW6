@@ -31,34 +31,39 @@
 
 	class Row:public Thread{
 	public:
-		Row(int* values, int m, Semaphore* PB);
+		Row(int* values, int row, int M, Semaphore* PB);
 	private:
+		char buf[100];
 		Semaphore* pb;
-		int values[];
+		int* vals;
+		int m, r;
 		void TheadFunc(void);
 		SynOneToOneChannel* channel;
 	};
 
 	class Col:public Thread{
 	public:
-		Col(int* values, int n);
+		Col(int* values, int col, int N, Semaphore* PB);
 	private:
+		char buf[100];
 		Semaphore* pb;
-		int values[];
+		int* vals;
+		int n,c;
 		void TheadFunc(void);
 		SynOneToOneChannel* channel;
 	};
 
 	class Index:public Thread{
 	public:
-		Index(int** C, int M, int N, int row,int col, Semaphore* PB);
+		Index(int* output, int row, int col, int M, int N, Semaphore* PB);
 	private:
+		char buf[100];
 		int row,col,m,n;
 		Semaphore* pb;
-		int** c;
+		int* c;
 		void TheadFunc(void);
 		int value = 0;
-		SynOneToOneChannel* left,down;
+		SynOneToOneChannel* left,down,up,right;
 	};
 
 #endif
