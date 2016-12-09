@@ -25,7 +25,7 @@
 Index::Index(int* output, int Row, int Col, int uid, 
 	SynOneToOneChannel* colChan, SynOneToOneChannel* colChanUp, 
 	SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft)
-:c(C), row(Row), col(Col), up(colChanUp), left(rowChanLeft){
+:c(output), row(Row), col(Col), up(colChanUp), left(rowChanLeft){
 	if(colChan == NULL){
 		b = 1;
 	}else{
