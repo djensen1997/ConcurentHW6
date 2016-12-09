@@ -226,7 +226,7 @@ void Col::ThreadFunc(void){
 // ----------------------------------------------------------- 
 void printArray(int* array, int array_size){
 	//format stuff
-	int ln = 20; //how many numbers can be on a line
+	int ln = -1; //how many numbers can be on a line
 	char out[400]; //the output buffer, nice and large
 	char formatS[] = "";
 	sprintf(out, "");
@@ -234,7 +234,7 @@ void printArray(int* array, int array_size){
 	//actually output the information
 	for(int i = 0; i < array_size; i++){
 		char temp[20];
-		sprintf(temp, "%4d", array[i]);
+		sprintf(temp, "%d ", array[i]);
 		//i is the current number
 		//if i%ln is 0, that means that there
 		//are alread ln numbers on a givin line,
