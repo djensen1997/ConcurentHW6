@@ -25,17 +25,17 @@
 Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 :c(C), m(M), n(N), row(Row), col(Col), pb(PB){
 	//compute threadid's for all threads around this one
-	UserDefinedThreadID = (row+1)*m + col;
+	UserDefinedThreadID = (row*(N+1)) + col;
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
 	int leftID = (row+1)*m + col - 1;
 	int downID = (row+1)*m + col + row;
 	int upID = (row+1)*m + col - row;
 	if(upID < 0){
-		upID = 60 + col;
+		upID = (M+1*N+1) + col;
 	}
 	if(UserDefinedThreadID%M == 0){
-		leftID = 60 + (row+1)*10;
+		leftID = (M+1*N+1) + (row+1)*N;
 	}
 	int rightID = (row+1)*m + col + 1;
 	//make the channels
@@ -120,7 +120,7 @@ void Index::ThreadFunc(void){
 // ----------------------------------------------------------- 
 Row::Row(int* values, int row, int M, Semaphore* PB)
 :vals(values), r(row), m(M), pb(PB){
-	UserDefinedThreadID = 60 + (r+1)*10;
+	UserDefinedThreadID = row*m;
 	sprintf(buf, "Row thread r[%d] started\n",row);
 	write(1,buf,strlen(buf));
 	int rightID = (r+1)*m;
@@ -171,7 +171,7 @@ void Row::ThreadFunc(void){
 // ----------------------------------------------------------- 
 Col::Col(int* values, int col, int N, Semaphore* PB)
 :vals(values), c(col), n(N), pb(PB){
-	UserDefinedThreadID = 60 + col;
+	UserDefinedThreadID = col;
 	sprintf(buf, "   Column thread c[%d] started\n",col);
 	write(1,buf,strlen(buf));
 	int downID = UserDefinedThreadID - 60;
