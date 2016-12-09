@@ -28,29 +28,6 @@ Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 	UserDefinedThreadID = (row*(N+1)) + col;
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
-	int leftID = UserDefinedThreadID - 1;
-	int downID = UserDefinedThreadID + (N+1);
-	int upID = UserDefinedThreadID - (N+1);
-	int rightID = UserDefinedThreadID + 1;
-	//make the channels
-	char leftName[100];
-	char downName[100];
-	char rightName[100];
-	char upName[100];
-	sprintf(leftName, "Channel%d-%d", leftID,UserDefinedThreadID);
-	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
-	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
-	sprintf(upName, "Channel%d-%d", upID, UserDefinedThreadID);
-	if(row + 1 != M){
-		right = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
-	}
-
-	if(col + 1 != N){
-		down = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
-	}
-	
-	up = new SynOneToOneChannel(upName, upID, UserDefinedThreadID);
-	left = new SynOneToOneChannel(leftName, leftID, UserDefinedThreadID);
 	value = 0;
 }
 
@@ -72,10 +49,30 @@ void Index::ThreadFunc(void){
 	int Left = 0;
 	//termination condition
 	int end = 0;
+	int leftID = UserDefinedThreadID - 1;
+	int downID = UserDefinedThreadID + (n+1);
+	int upID = UserDefinedThreadID - (n+1);
+	int rightID = UserDefinedThreadID + 1;
+	//make the channels
+	char leftName[100];
+	char downName[100];
+	char rightName[100];
+	char upName[100];
+	sprintf(leftName, "Channel%d-%d", leftID,UserDefinedThreadID);
+	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
+	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
+	sprintf(upName, "Channel%d-%d", upID, UserDefinedThreadID);
+	if(row + 1 != M){
+		right = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
+	}
+
+	if(col + 1 != N){
+		down = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
+	}
+	up = new SynOneToOneChannel(upName, upID, UserDefinedThreadID);
+	left = new SynOneToOneChannel(leftName, leftID, UserDefinedThreadID);
 	while(end == 0){
 		//get information
-		sprintf(buf, "      Thread P[%d,%d] ready to receive\n", row+1,col+1);
-		write(1, buf, strlen(buf));
 		up->Receive(&Down, sizeof(int));
 		left->Receive(&Left, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
@@ -115,12 +112,9 @@ void Index::ThreadFunc(void){
 Row::Row(int* values, int row, int M, Semaphore* PB)
 :vals(values), r(row), m(M), pb(PB){
 	UserDefinedThreadID = row*m;
-	sprintf(buf, "Row thread r[%d] started\n",row);
+	sprintf(buf, "Row thread r[%d] started\n",row+1);
 	write(1,buf,strlen(buf));
-	int rightID = UserDefinedThreadID + 1;
-	char rightName[100];
-	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
-	channel = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
+	
 }
 
 
@@ -136,16 +130,18 @@ Row::Row(int* values, int row, int M, Semaphore* PB)
 void Row::ThreadFunc(void){
 	//Row thread r[3] sent 5 to P[3,1]
 	Thread::ThreadFunc();
+	int rightID = UserDefinedThreadID + 1;
+	char rightName[100];
+	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
+	channel = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
 	for(int i = 0; i < m; i++){
-		sprintf(buf, "Row thread r[%d] ready to send\n", r);
-		write(1, buf, strlen(buf));
 		channel->Send((&(vals[i])), sizeof(int));
-		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r,vals[i],r);
+		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r+1,vals[i],r+1);
 		write(1, buf, strlen(buf));
 	}
 	int temp = EOD;
 	channel->Send((void*)&temp, sizeof(int));
-	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r,r);
+	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r+1,r+1);
 	write(1, buf, strlen(buf));
 	Exit();
 }
@@ -166,7 +162,7 @@ void Row::ThreadFunc(void){
 Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 :vals(values), c(col), n(N), pb(PB){
 	UserDefinedThreadID = col;
-	sprintf(buf, "   Column thread c[%d] started\n",col);
+	sprintf(buf, "   Column thread c[%d] started\n",col+1);
 	write(1,buf,strlen(buf));
 	int downID = UserDefinedThreadID - M;
 	char downName[100];
@@ -187,15 +183,13 @@ Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
-		sprintf(buf, "   Col thread c[%d] ready to send\n", c);
-		write(1, buf, strlen(buf));
 		channel->Send(&(vals[i]), sizeof(int));
-		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c,vals[i],c);
+		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c+1,vals[i],c+1);
 		write(1, buf, strlen(buf));
 	}
 	int temp = EOD;
 	channel->Send((void*)&temp, sizeof(int));
-	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c,c);
+	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c+1,c+1);
 	write(1, buf, strlen(buf));
 	Exit();
 }

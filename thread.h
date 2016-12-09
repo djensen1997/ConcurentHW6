@@ -44,7 +44,7 @@
 
 	class Col:public Thread{
 	public:
-		Col(int* values, int col, int N, Semaphore* PB);
+		Col(int* values, int col, int N, int M, Semaphore* PB);
 	private:
 		char buf[200];
 		Semaphore* pb;

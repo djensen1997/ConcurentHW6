@@ -55,7 +55,6 @@ int main(int argc, char** argv){
 	for(int i = 0; i < m; i++){
 
 		row[i] = new Row(&(A[i][0]), i, b, pb);
-		row[i]->Begin();
 	}
 
 	Col* col[m];
@@ -65,12 +64,25 @@ int main(int argc, char** argv){
 			values[i] = B[j][i];
 		}
 		col[i] = new Col(values, i, m, b, pb);
-		col[i]->Begin();
 	}
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < b; j++){
 			array[i][j] = new Index(&ans[i][j], m, b, i, j, pb);
+		}
+	}
+
+	for(int i = 0; i < m; i++){
+		row[i]->Begin();
+	}
+
+	Col* col[m];
+	for(int i = 0; i < b; i++){
+		col[i]->Begin();
+	}
+
+	for(int i = 0; i < m; i++){
+		for(int j = 0; j < b; j++){
 			array[i][j]->Begin();
 		}
 	}
