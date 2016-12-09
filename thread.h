@@ -38,7 +38,7 @@
 		Semaphore* pb;
 		int* vals;
 		int m, r;
-		void TheadFunc(void);
+		void ThreadFunc(void);
 		SynOneToOneChannel* channel;
 	};
 
@@ -50,7 +50,7 @@
 		Semaphore* pb;
 		int* vals;
 		int n,c;
-		void TheadFunc(void);
+		void ThreadFunc(void);
 		SynOneToOneChannel* channel;
 	};
 
@@ -62,7 +62,7 @@
 		int row,col,m,n;
 		Semaphore* pb;
 		int* c;
-		void TheadFunc(void);
+		void ThreadFunc(void);
 		int value = 0;
 		SynOneToOneChannel* left,down,up,right;
 	};
