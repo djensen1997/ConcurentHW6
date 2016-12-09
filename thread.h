@@ -49,7 +49,7 @@
 		char buf[200];
 		Semaphore* pb;
 		int* vals;
-		int n,c;
+		int n,m,c;
 		void ThreadFunc(void);
 		SynOneToOneChannel* channel;
 	};

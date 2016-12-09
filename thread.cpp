@@ -160,7 +160,7 @@ void Row::ThreadFunc(void){
 // 		sprintf, srand
 // ----------------------------------------------------------- 
 Col::Col(int* values, int col, int N, int M, Semaphore* PB)
-:vals(values), c(col), n(N), pb(PB){
+:vals(values), c(col), n(N), m(M), pb(PB){
 	UserDefinedThreadID = col;
 	sprintf(buf, "   Column thread c[%d] started\n",col+1);
 	write(1,buf,strlen(buf));
