@@ -24,7 +24,7 @@
 	#include <stdlib.h>
 	#include <math.h>
 	#include <iostream>
-	#include <string>
+	#include <string.h>
 	using namespace std;
 	//thread includes
 	#include "ThreadClass.h"
