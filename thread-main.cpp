@@ -58,7 +58,7 @@ int main(int argc, char** argv){
 		char name[100];
 		sprintf(name, "Channel%d-%d", (i+1)*(b+1), (i+1)*(b+1) + 1);
 		rowChannel[i+1][0] = new SynOneToOneChannel(name, (i+1)*(b+1), (i+1)*(b+1) + 1);
-		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, rowChannel[i+1][0]);
+		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, rowChannel[i+1][0], pb);
 	}
 
 	Col* col[b];
@@ -70,7 +70,7 @@ int main(int argc, char** argv){
 		char name[100];
 		sprintf(name, "Channel%d-%d", i+1, (b+1) + (i+1));
 		colChannel[0][i+1] = new SynOneToOneChannel(name, i+1, (b+1) + (i+1));
-		col[i] = new Col(values, a, i+1,i, colChannel[0][i+1]);
+		col[i] = new Col(values, a, i+1,i, colChannel[0][i+1],pb);
 	}
 
 	for(int i = 0; i < m; i++){
@@ -80,19 +80,19 @@ int main(int argc, char** argv){
 			int userid = (i+1)*(m+1) + (j+1);
 			if(j+1 == b && i+1 == m){
 				array[i][j] = new Index(&ans[i][j], userid, i, j, NULL, colChannel[row-1][col],
-					NULL,rowChannel[row][col-1]);
+					NULL,rowChannel[row][col-1],pb);
 			}else if(j+1 == b){
 				char downName[100];
 				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
 				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (m+1));
 				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[row][col], colChannel[row-1][col],
-					NULL,rowChannel[row][col-1]);
+					NULL,rowChannel[row][col-1],pb);
 			}else if(i+1 == m){
 				char rightName[100];
 				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
 				rowChannel[row][col] = new SynOneToOneChannel(rightName, userid, userid + 1);
 				array[i][j] = new Index(&ans[i][j], userid, i, j, NULL, colChannel[row-1][col],
-					rowChannel[row][col],rowChannel[row][col-1]);
+					rowChannel[row][col],rowChannel[row][col-1],pb);
 			}else{
 				char rightName[100];
 				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
@@ -101,7 +101,7 @@ int main(int argc, char** argv){
 				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
 				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (m+1));
 				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[row][col], colChannel[row-1][col],
-					rowChannel[row][col],rowChannel[row][col-1]);
+					rowChannel[row][col],rowChannel[row][col-1],pb);
 			}
 		}
 	}

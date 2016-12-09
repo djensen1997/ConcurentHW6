@@ -24,8 +24,8 @@
 // ----------------------------------------------------------- 
 Index::Index(int* output, int uid, int Row, int Col, 
 	SynOneToOneChannel* colChan, SynOneToOneChannel* colChanUp, 
-	SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft)
-:c(output), row(Row), col(Col), up(colChanUp), left(rowChanLeft){
+	SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft, Semaphore* PB)
+:c(output), row(Row), col(Col), up(colChanUp), left(rowChanLeft), pb(PB){
 	if(colChan == NULL){
 		b = 1;
 	}else{
@@ -57,8 +57,10 @@ Index::Index(int* output, int uid, int Row, int Col,
 // ----------------------------------------------------------- 
 void Index::ThreadFunc(void){
 	Thread::ThreadFunc();
+	pb->Wait();
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
+	pb->Signal();
 	//temp variables to hold data
 	int Down = 0;
 	int Left = 0;
@@ -68,8 +70,10 @@ void Index::ThreadFunc(void){
 		//get information
 		up->Receive(&Down, sizeof(int));
 		left->Receive(&Left, sizeof(int));
+		pb->Wait();
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
 		write(1, buf, strlen(buf));
+		pb->Signal();
 		//decide to end the loop or use data
 		if(Down == EOD || Left == EOD){
 			end = 1;
@@ -81,13 +85,16 @@ void Index::ThreadFunc(void){
 			right->Send(&Left, sizeof(int));
 		if(b != 0)
 			down->Send(&Down, sizeof(int));
+		pb->Wait();
 		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
 		write(1,buf,strlen(buf));
-
+		pb->Signal();
 	}
 	*c = value;//set the array value to the computed value
+	pb->Wait();
 	sprintf(buf, "      Thread P[%d,%d] received EOD, saved result %d and terminated\n", row+1,col+1,value);
 	write(1, buf, strlen(buf));
+	pb->Signal();
 }
 
 
@@ -103,8 +110,8 @@ void Index::ThreadFunc(void){
 // FUNCTION CALLED :                                           
 // 		sprintf, srand
 // ----------------------------------------------------------- 
-Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan)
-:vals(values), m(size), r(row), channel(chan){
+Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan, Semaphore* PB)
+:vals(values), m(size), r(row), channel(chan), pb(PB){
 	UserDefinedThreadID = uid;
 	
 }
@@ -121,17 +128,22 @@ Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Row::ThreadFunc(void){
 	Thread::ThreadFunc();
-	printf(buf, "Row thread r[%d] started\n",r+1);
+	pb->Wait();
+	sprintf(buf, "Row thread r[%d] started\n",r+1);
 	write(1,buf,strlen(buf));
+	pb->Signal();
 	for(int i = 0; i < m; i++){
 		channel->Send((&(vals[i])), sizeof(int));
+		pb->Wait();
 		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r+1,vals[i],r+1);
 		write(1, buf, strlen(buf));
 	}
 	int temp = EOD;
 	channel->Send(&temp, sizeof(int));
+	pb->Wait();
 	sprintf(buf, "Row thread r[%d] sent EOD to P[%d,1] and terminated\n",r+1,r+1);
 	write(1, buf, strlen(buf));
+	pb->Signal();
 }
 
 
@@ -147,8 +159,8 @@ void Row::ThreadFunc(void){
 // FUNCTION CALLED :                                           
 // 		sprintf, srand
 // ----------------------------------------------------------- 
-Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
-:vals(values), n(size), c(col), channel(chan){
+Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan, Semaphore* PB)
+:vals(values), n(size), c(col), channel(chan), pb(PB){
 	UserDefinedThreadID = col+1;
 	
 	
@@ -166,17 +178,23 @@ Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
+	pb->Wait();
 	sprintf(buf, "   Column thread c[%d] started\n",c+1);
 	write(1,buf,strlen(buf));
+	pb->Signal();
 	for(int i = 0; i < n; i++){
 		channel->Send(&(vals[i]), sizeof(int));
+		pb->Wait();
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c+1,vals[i],c+1);
 		write(1, buf, strlen(buf));
+		pb->Signal();
 	}
 	int temp = EOD;
 	channel->Send(&temp, sizeof(int));
+	pb->Wait();
 	sprintf(buf, "   Col thread c[%d] sent EOD to P[1,%d] and terminated\n",c+1,c+1);
 	write(1, buf, strlen(buf));
+	pb->Signal();
 }
 
 // ----------------------------------------------------------- 

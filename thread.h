@@ -32,7 +32,8 @@
 
 	class Row:public Thread{
 	public:
-		Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan);
+		Row(int* values, int size, int uid, int row, 
+			SynOneToOneChannel* chan, Semaphore* PB);
 	private:
 		char buf[200];
 		int* vals;
@@ -44,7 +45,8 @@
 
 	class Col:public Thread{
 	public:
-		Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan);
+		Col(int* values, int size, int uid, int col, 
+			SynOneToOneChannel* chan, Semaphore* PB);
 	private:
 		char buf[200];
 		int* vals;
@@ -57,7 +59,7 @@
 	public:
 		Index(int* output, int row, int col, int uid, 
 			SynOneToOneChannel* colChan, SynOneToOneChannel* colChanUp, 
-			SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft);
+			SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft, Semaphore* PB);
 	private:
 		char buf[200];
 		int row,col,m,n;
