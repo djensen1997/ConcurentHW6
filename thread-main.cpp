@@ -55,36 +55,38 @@ int main(int argc, char** argv){
 	SynOneToOneChannel* rowChannel[m+1][b+1];
 	SynOneToOneChannel* colChannel[m+1][b+1];
 	for(int i = 0; i < m; i++){
+		int userid = (i+1)*(b+1);
 		char name[100];
-		sprintf(name, "Channel%d-%d", (i+1)*(b+1), (i+1)*(b+1) + 1);
-		rowChannel[i+1][0] = new SynOneToOneChannel(name, (i+1)*(b+1), (i+1)*(b+1) + 1);
-		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, rowChannel[i+1][0], pb);
+		sprintf(name, "Channel%d-%d", userid, userid + 1);
+		rowChannel[i+1][0] = new SynOneToOneChannel(name, userid, userid + 1);
+		row[i] = new Row(&(A[i][0]), n, userid,i, rowChannel[i+1][0], pb);
 	}
 
 	Col* col[b];
 	for(int i = 0; i < b; i++){
+		int userid = i+1;
 		int* values = (int*)malloc(sizeof(int) * a);
 		for(int j = 0; j < a; j++){
 			values[j] = B[j][i];
 		}
 		char name[100];
-		sprintf(name, "Channel%d-%d", i+1, (b+1) + (i+1));
-		colChannel[0][i+1] = new SynOneToOneChannel(name, i+1, (b+1) + (i+1));
-		col[i] = new Col(values, a, i+1,i, colChannel[0][i+1],pb);
+		sprintf(name, "Channel%d-%d", userid, (b+1) + userid);
+		colChannel[0][i+1] = new SynOneToOneChannel(name, userid, (b+1) + (userid));
+		col[i] = new Col(values, a, userid,i, colChannel[0][i+1],pb);
 	}
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < b; j++){
 			int row = i+1;
 			int col = j+1;
-			int userid = (i+1)*(m+1) + (j+1);
+			int userid = (i+1)*(b+1) + (j+1);
 			if(j+1 == b && i+1 == m){
 				array[i][j] = new Index(&ans[i][j], userid, i, j, NULL, colChannel[row-1][col],
 					NULL,rowChannel[row][col-1],pb);
 			}else if(j+1 == b){
 				char downName[100];
-				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
-				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (m+1));
+				sprintf(downName, "Channel%d-%d", userid, userid + (b+1));
+				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (b+1));
 				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[row][col], colChannel[row-1][col],
 					NULL,rowChannel[row][col-1],pb);
 			}else if(i+1 == m){
@@ -98,8 +100,8 @@ int main(int argc, char** argv){
 				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
 				rowChannel[row][col] = new SynOneToOneChannel(rightName, userid, userid + 1);
 				char downName[100];
-				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
-				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (m+1));
+				sprintf(downName, "Channel%d-%d", userid, userid + (b+1));
+				colChannel[row][col] = new SynOneToOneChannel(downName, userid, userid + (b+1));
 				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[row][col], colChannel[row-1][col],
 					rowChannel[row][col],rowChannel[row][col-1],pb);
 			}
