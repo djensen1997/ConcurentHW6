@@ -80,8 +80,8 @@ void Index::ThreadFunc(void){
 	int end = 0;
 	while(end == 0){
 		//get information
-		up->Receive(Down, sizeof(int));
-		left->Receive(Left, sizeof(int));
+		up->Receive(&Down, sizeof(int));
+		left->Receive(&Left, sizeof(int));
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
 		write(1, buf, strlen(buf));
 		//decide to end the loop or use data
