@@ -76,12 +76,15 @@ int main(int argc, char** argv){
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < b; j++){
 			int userid = (i+1)*(m+1) + (j+1);
-			if(j+1 == b){
+			if(j+1 == b && i+1 == m){
+				array[i][j] = new Index(&ans[i][j], userid, i, j, NULL, colChannel[i-1][j]
+					NULL,rowChannel[i][j-1]);
+			}else if(j+1 == b){
 				char downName[100];
 				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
 				colChannel[i][j] = new SynOneToOneChannel(downName, userid, userid + (m+1));
 				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[i][j], colChannel[i-1][j]
-					NULL,NULL);
+					NULL,rowChannel[i][j-1]);
 			}else if(i+1 == m){
 				char rightName[100];
 				sprintf(rightName, "Channel%d-%d", userid, userid + 1);

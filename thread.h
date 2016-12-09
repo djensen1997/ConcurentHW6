@@ -37,7 +37,7 @@
 		char buf[200];
 		int* vals;
 		int m, r;
-		int b,e;
+
 		void ThreadFunc(void);
 		SynOneToOneChannel* channel;
 	};
@@ -62,6 +62,7 @@
 		char buf[200];
 		int row,col,m,n;
 		Semaphore* pb;
+		int b,e;
 		int* c;
 		void ThreadFunc(void);
 		int value;
