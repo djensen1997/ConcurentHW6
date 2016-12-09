@@ -63,7 +63,7 @@ int main(int argc, char** argv){
 
 	Col* col[b];
 	for(int i = 0; i < b; i++){
-		int values[a];
+		int* values = (int*)malloc(sizeof(int) * a);
 		for(int j = 0; j < a; j++){
 			values[j] = B[j][i];
 		}
