@@ -120,11 +120,11 @@ int main(int argc, char** argv){
 		}
 	}
 
-	for(int i = 0; i < b; i++){
+	for(int i = 0; i < m; i++){
 		row[i]->Join();
 	}
 
-	for(int i = 0; i < m; i++){
+	for(int i = 0; i < b; i++){
 		col[i]->Join();
 	}
 
