@@ -64,7 +64,7 @@ int main(int argc, char** argv){
 		for(int j = 0; j < a; j++){
 			values[i] = B[j][i];
 		}
-		col[i] = new Col(values, i, m, pb);
+		col[i] = new Col(values, i, m, b, pb);
 		col[i]->Begin();
 	}
 

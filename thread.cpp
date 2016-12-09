@@ -28,16 +28,10 @@ Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 	UserDefinedThreadID = (row*(N+1)) + col;
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
-	int leftID = (row+1)*m + col - 1;
-	int downID = (row+1)*m + col + row;
-	int upID = (row+1)*m + col - row;
-	if(upID < 0){
-		upID = (M+1*N+1) + col;
-	}
-	if(UserDefinedThreadID%M == 0){
-		leftID = (M+1*N+1) + (row+1)*N;
-	}
-	int rightID = (row+1)*m + col + 1;
+	int leftID = UserDefinedThreadID - 1;
+	int downID = UserDefinedThreadID + (N+1);
+	int upID = UserDefinedThreadID - (N+1);
+	int rightID = UserDefinedThreadID + 1;
 	//make the channels
 	char leftName[100];
 	char downName[100];
@@ -123,7 +117,7 @@ Row::Row(int* values, int row, int M, Semaphore* PB)
 	UserDefinedThreadID = row*m;
 	sprintf(buf, "Row thread r[%d] started\n",row);
 	write(1,buf,strlen(buf));
-	int rightID = (r+1)*m;
+	int rightID = UserDefinedThreadID + 1;
 	char rightName[100];
 	sprintf(rightName, "Channel%d-%d", UserDefinedThreadID, rightID);
 	channel = new SynOneToOneChannel(rightName, UserDefinedThreadID, rightID);
@@ -169,12 +163,12 @@ void Row::ThreadFunc(void){
 // FUNCTION CALLED :                                           
 // 		sprintf, srand
 // ----------------------------------------------------------- 
-Col::Col(int* values, int col, int N, Semaphore* PB)
+Col::Col(int* values, int col, int N, int M, Semaphore* PB)
 :vals(values), c(col), n(N), pb(PB){
 	UserDefinedThreadID = col;
 	sprintf(buf, "   Column thread c[%d] started\n",col);
 	write(1,buf,strlen(buf));
-	int downID = UserDefinedThreadID - 60;
+	int downID = UserDefinedThreadID - M;
 	char downName[100];
 	sprintf(downName, "Channel%d-%d", UserDefinedThreadID, downID);
 	channel = new SynOneToOneChannel(downName, UserDefinedThreadID, downID);
