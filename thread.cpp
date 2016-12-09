@@ -25,7 +25,7 @@
 Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 :c(C), m(M), n(N), row(Row), col(Col), pb(PB){
 	//compute threadid's for all threads around this one
-	UserDefinedThreadID = (r+1)*m + col;
+	UserDefinedThreadID = (row+1)*m + col;
 	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
 	int leftID = (row+1)*m + col - 1;
@@ -85,7 +85,7 @@ void Index::ThreadFunc(void){
 		sprintf(buf, "      Thread P[%d,%d] received %d from above and %d from left\n",row+1,col+1,Down,Left);
 		write(1, buf, strlen(buf));
 		//decide to end the loop or use data
-		if(Down == E)D || Left == EOD){
+		if(Down == EOD || Left == EOD){
 			end = 1;
 		}else{
 			value += (Down * Left);

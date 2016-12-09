@@ -64,7 +64,10 @@
 		int* c;
 		void ThreadFunc(void);
 		int value;
-		SynOneToOneChannel* left,down,up,right;
+		SynOneToOneChannel* left;
+		SynOneToOneChannel* down;
+		SynOneToOneChannel* up;
+		SynOneToOneChannel* right;
 	};
 
 	void printArray(int* array, int array_size);
