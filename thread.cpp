@@ -22,7 +22,7 @@
 // FUNCTION CALLED :                                           
 // 		sprintf, srand
 // ----------------------------------------------------------- 
-Index::Index(int* output, int Row, int Col, int uid, 
+Index::Index(int* output, int uid, int Row, int Col, 
 	SynOneToOneChannel* colChan, SynOneToOneChannel* colChanUp, 
 	SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft)
 :c(output), row(Row), col(Col), up(colChanUp), left(rowChanLeft){
