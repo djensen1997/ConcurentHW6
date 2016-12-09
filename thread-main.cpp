@@ -50,7 +50,7 @@ int main(int argc, char** argv){
 
 	Semaphore* pb = new Semaphore("Print Block", 1);
 	int ans[m][b];
-	Index array[m][b];
+	Index* array[m][b];
 	Row* row[b];
 	for(int i = 0; i < m; i++){
 
