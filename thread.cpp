@@ -40,8 +40,7 @@ Index::Index(int* output, int uid, int Row, int Col,
 	}
 	//compute threadid's for all threads around this one
 	UserDefinedThreadID = uid;
-	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
-	write(1,buf,strlen(buf));
+	
 	value = 0;
 }
 
@@ -58,6 +57,8 @@ Index::Index(int* output, int uid, int Row, int Col,
 // ----------------------------------------------------------- 
 void Index::ThreadFunc(void){
 	Thread::ThreadFunc();
+	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
+	write(1,buf,strlen(buf));
 	//temp variables to hold data
 	int Down = 0;
 	int Left = 0;
@@ -106,8 +107,6 @@ void Index::ThreadFunc(void){
 Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan)
 :vals(values), m(size), r(row), channel(chan){
 	UserDefinedThreadID = uid;
-	sprintf(buf, "Row thread r[%d] started\n",row+1);
-	write(1,buf,strlen(buf));
 	
 }
 
@@ -123,6 +122,8 @@ Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Row::ThreadFunc(void){
 	Thread::ThreadFunc();
+	printf(buf, "Row thread r[%d] started\n",row+1);
+	write(1,buf,strlen(buf));
 	for(int i = 0; i < m; i++){
 		channel->Send((&(vals[i])), sizeof(int));
 		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r+1,vals[i],r+1);
@@ -152,8 +153,7 @@ void Row::ThreadFunc(void){
 Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 :vals(values), n(size), c(col), channel(chan){
 	UserDefinedThreadID = col+1;
-	sprintf(buf, "   Column thread c[%d] started\n",col+1);
-	write(1,buf,strlen(buf));
+	
 	
 }
 
@@ -169,6 +169,8 @@ Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
+	sprintf(buf, "   Column thread c[%d] started\n",col+1);
+	write(1,buf,strlen(buf));
 	for(int i = 0; i < n; i++){
 		channel->Send(&(vals[i]), sizeof(int));
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c+1,vals[i],c+1);
