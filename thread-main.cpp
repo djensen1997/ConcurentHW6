@@ -52,9 +52,13 @@ int main(int argc, char** argv){
 	int ans[m][b];
 	Index* array[m][b];
 	Row* row[m];
+	SynOneToOneChannel* rowChannels[m+1][b+1];
+	SynOneToOneChannel* colChannels[m+1][b+1];
 	for(int i = 0; i < m; i++){
-
-		row[i] = new Row(&(A[i][0]), i, b, pb);
+		char name[100];
+		sprintf(name, "Channel%d-%d", (i+1)*(b+1), (i+1)*(b+1) + 1);
+		rowChannel[i+1][0] = new SynOneToOneChannel(name, (i+1)*(b+1), (i+1)*(b+1) + 1);
+		row[i] = new Row(&(A[i][0]), n, (i+1)*(b+1),i, channel[i+1][0]);
 	}
 
 	Col* col[b];
@@ -63,12 +67,37 @@ int main(int argc, char** argv){
 		for(int j = 0; j < a; j++){
 			values[j] = B[j][i];
 		}
-		col[i] = new Col(values, i, m, b, pb);
+		char name[100];
+		sprintf(name, "Channel%d-%d", i+1, (b+1) + (i+1));
+		colChannel[0][i+1] = new SynOneToOneChannel(name, i+1, (b+1) + (i+1));
+		col[i] = new Col(values, a, i+1,i, channel[0][i+1]);
 	}
 
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < b; j++){
-			array[i][j] = new Index(&ans[i][j], m, b, i, j, pb);
+			int userid = (i+1)*(m+1) + (j+1);
+			if(j+1 == b){
+				char downName[100];
+				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
+				colChannel[i][j] = new SynOneToOneChannel(downName, userid, userid + (m+1));
+				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[i][j], colChannel[i-1][j]
+					NULL,NULL);
+			}else if(i+1 == m){
+				char rightName[100];
+				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
+				rowChannel[i][j] = new SynOneToOneChannel(rightName, userid, userid + 1);
+				array[i][j] = new Index(&ans[i][j], userid, i, j, NULL, NULL
+					rowChannel[i][j],rowChannel[i][j-1]);
+			}else{
+				char rightName[100];
+				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
+				rowChannel[i][j] = new SynOneToOneChannel(rightName, userid, userid + 1;
+				char downName[100];
+				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
+				colChannel[i][j] = new SynOneToOneChannel(downName, userid, userid + (m+1));
+				array[i][j] = new Index(&ans[i][j], userid, i, j, colChannel[i][j], colChannel[i-1][j]
+					rowChannel[i][j],rowChannel[i][j-1]);
+			}
 		}
 	}
 

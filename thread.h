@@ -32,22 +32,21 @@
 
 	class Row:public Thread{
 	public:
-		Row(int* values, int row, int M, Semaphore* PB);
+		Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan);
 	private:
 		char buf[200];
-		Semaphore* pb;
 		int* vals;
 		int m, r;
+		int b,e;
 		void ThreadFunc(void);
 		SynOneToOneChannel* channel;
 	};
 
 	class Col:public Thread{
 	public:
-		Col(int* values, int col, int N, int M, Semaphore* PB);
+		Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan);
 	private:
 		char buf[200];
-		Semaphore* pb;
 		int* vals;
 		int n,m,c;
 		void ThreadFunc(void);
@@ -56,7 +55,9 @@
 
 	class Index:public Thread{
 	public:
-		Index(int* output, int Row, int Col, int M, int N, Semaphore* PB);
+		Index(int* output, int row, int col, int uid, 
+			SynOneToOneChannel* colChan, SynOneToOneChannel* colChanUp, 
+			SynOneToOneChannel* rowChan, SynOneToOneChannel* rowChanLeft);
 	private:
 		char buf[200];
 		int row,col,m,n;
