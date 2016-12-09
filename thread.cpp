@@ -81,14 +81,29 @@ void Index::ThreadFunc(void){
 			value += (Down * Left);
 		}
 		//pass data along
-		if(e != 0)
-			right->Send(&Left, sizeof(int));
-		if(b != 0)
+		if(e == 1 && b == 1){
+
+		}else if(e != 0){
+			pb->Wait();
+			sprintf(buf, "      Thread P[%d,%d] sent %d to below\n",row+1,col+1,Down);
+			write(1,buf,strlen(buf));
+			pb->Signal();
 			down->Send(&Down, sizeof(int));
-		pb->Wait();
-		sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
-		write(1,buf,strlen(buf));
-		pb->Signal();
+		}else if(b != 0){
+			pb->Wait();
+			sprintf(buf, "      Thread P[%d,%d] sent %d to right\n",row+1,col+1,Left);
+			write(1,buf,strlen(buf));
+			pb->Signal();
+			right->Send(&Left, sizeof(int));
+		}else{
+			pb->Wait();
+			sprintf(buf, "      Thread P[%d,%d] sent %d to below and %d to right\n",row+1,col+1,Down,Left);
+			write(1,buf,strlen(buf));
+			pb->Signal();
+			right->Send(&Left, sizeof(int));
+			down->Send(&Down, sizeof(int));
+		}
+		
 	}
 	*c = value;//set the array value to the computed value
 	pb->Wait();
