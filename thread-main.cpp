@@ -94,7 +94,7 @@ int main(int argc, char** argv){
 			}else{
 				char rightName[100];
 				sprintf(rightName, "Channel%d-%d", userid, userid + 1);
-				rowChannel[i][j] = new SynOneToOneChannel(rightName, userid, userid + 1;
+				rowChannel[i][j] = new SynOneToOneChannel(rightName, userid, userid + 1);
 				char downName[100];
 				sprintf(downName, "Channel%d-%d", userid, userid + (m+1));
 				colChannel[i][j] = new SynOneToOneChannel(downName, userid, userid + (m+1));
