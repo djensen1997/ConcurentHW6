@@ -40,7 +40,7 @@ Index::Index(int* output, int uid, int Row, int Col,
 	}
 	//compute threadid's for all threads around this one
 	UserDefinedThreadID = uid;
-	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1,UserDefinedThreadID);
+	sprintf(buf, "      Thread P[%d,%d] started\n",row+1,col+1);
 	write(1,buf,strlen(buf));
 	value = 0;
 }
@@ -152,7 +152,7 @@ void Row::ThreadFunc(void){
 Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 :vals(values), n(size), c(col), channel(chan){
 	UserDefinedThreadID = col+1;
-	sprintf(buf, "   Column thread c[%d] started %d\n",col+1);
+	sprintf(buf, "   Column thread c[%d] started\n",col+1);
 	write(1,buf,strlen(buf));
 	
 }
@@ -168,6 +168,7 @@ Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 // 		sprintf, srand, Cannel.send, Cannel.recieve
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
+	Thread::ThreadFunc();
 	for(int i = 0; i < n; i++){
 		channel->Send(&(vals[i]), sizeof(int));
 		sprintf(buf, "   Col thread c[%d] sent %d to P[1,%d]\n", c+1,vals[i],c+1);
