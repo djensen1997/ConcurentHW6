@@ -34,7 +34,7 @@ Index::Index(int* C, int M, int N, int Row,int Col, Semaphore* PB)
 	if(upID < 0){
 		upID = 60 + col;
 	}
-	if(UserDefinedThreadID%10 == 0){
+	if(UserDefinedThreadID%M == 0){
 		leftID = 60 + (row+1)*10;
 	}
 	int rightID = (row+1)*m + col + 1;
