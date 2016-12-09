@@ -137,6 +137,7 @@ void Row::ThreadFunc(void){
 		pb->Wait();
 		sprintf(buf, "Row thread r[%d] sent %d to P[%d,1]\n", r+1,vals[i],r+1);
 		write(1, buf, strlen(buf));
+		pb->Signal();
 	}
 	int temp = EOD;
 	channel->Send(&temp, sizeof(int));
