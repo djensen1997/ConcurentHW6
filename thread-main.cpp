@@ -75,12 +75,9 @@ int main(int argc, char** argv){
 	for(int i = 0; i < m; i++){
 		row[i]->Begin();
 	}
-
-	Col* col[m];
 	for(int i = 0; i < b; i++){
 		col[i]->Begin();
 	}
-
 	for(int i = 0; i < m; i++){
 		for(int j = 0; j < b; j++){
 			array[i][j]->Begin();
