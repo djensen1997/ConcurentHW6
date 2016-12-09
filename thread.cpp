@@ -122,7 +122,7 @@ Row::Row(int* values, int size, int uid, int row, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Row::ThreadFunc(void){
 	Thread::ThreadFunc();
-	printf(buf, "Row thread r[%d] started\n",row+1);
+	printf(buf, "Row thread r[%d] started\n",r+1);
 	write(1,buf,strlen(buf));
 	for(int i = 0; i < m; i++){
 		channel->Send((&(vals[i])), sizeof(int));
@@ -169,7 +169,7 @@ Col::Col(int* values, int size, int uid, int col, SynOneToOneChannel* chan)
 // ----------------------------------------------------------- 
 void Col::ThreadFunc(void){
 	Thread::ThreadFunc();
-	sprintf(buf, "   Column thread c[%d] started\n",col+1);
+	sprintf(buf, "   Column thread c[%d] started\n",c+1);
 	write(1,buf,strlen(buf));
 	for(int i = 0; i < n; i++){
 		channel->Send(&(vals[i]), sizeof(int));
