@@ -3,5 +3,143 @@ cs3331: Concurent Computing
 README
 
 
-Question:
+Question: The logic of your program / Why does your program work?
 Answer:
+	My program is very straight forward.  It starts by reading in the arrays
+	using scanf, then makes makes the threads and channels necissary to both
+	pass the info and meet the assignment requirements.  I made sure to define
+	the row input and column input threads first so that information is
+	correctly passes from the begining of the program to the end.  I define 
+	channels in thread-main because I needed a way to make sure that a channel
+	would only be defined once per channel, and when I had the individual 
+	threads take care of their own channels, I got duplicates of every channel.
+	I defined all the UserDefinedThreadID's in the following ways, I started by
+	making an array of dimentions (m+1,n+1) where m is the number of rows in
+	the first array and n is the number of collumns in the second array.  The
+	plus one is necissary because I concatonate the input threads to that 
+	array, so there is an unused index, but that is inconcequential.  The id
+	of a thread in that array would be row*(num_columns) + column.  This made 
+	sure that ever thread has a unique ID and I can make a very large number 
+	of ID's to accomidate large input matricies.  
+		Now to the threads: the row and column threads are almost carbon 
+	copies of eachother, so I will discuss their function together.  Their
+	constructors only set the thread ID and other important variables.  Their 
+	thread funcs are a for loop that iterates over the array that is passed in 
+	through the constructor.  Each iteration, it passes array[i] to the next 
+	thread.  At the end of the for loop, they pass the EOD indicator and 
+	terminate.  The column frees its input array didn't get the same pointer 
+	for their array.  The main program thread then joins with the row or 
+	collumn.
+		The index thread are very straight forward.  The constructor assigns 
+	the UserID and then sets b to one if this thead is at the bottom of the 
+	array that I mentioned in the first paragraph.  If it is, the channel that
+	this thread would normally pass a value down through will be NULL, and it
+	sets b accordingly.  E works the same way except it is on the right edge
+	of the array.  The thread func for index loops on a while loop, that is 
+	terminated if an EOD (-1) is sent through.  Otherwise, the thread will take
+	a value from the top and left arrays, pass them along (if b is 1, it won't 
+	pass down, and if e is 1, it won't pass right) and multiply then together 
+	and add that resault to its stored value.  After it terminates the while 
+	statement, it stores its internal value into the integer pointer that was
+	passed in through its constrctor.  It then terminates and joins back with
+	the main program's thread.  After all the threads are joined, the main 
+	program prints the 2 input arrays and the product of those two arrays.
+	It then terminates itself and the program finishes.
+
+Question: The meaning, initial value and the use of each variable. Explain why 
+their initial values and uses are correct. Justify your claim.
+Answer: 
+since row and col are almost exact copies, i've only included one of them, but
+I will point out the differences as I go through each variable.
+Col/Row
+char buf[200];					The internal buffer for outputing information
+								to the terminal window.
+int* vals;						The array of values that is passed in through
+								the constructor.
+								For row this is extremely simple, just take 
+								the pointer of the first array taken on each 
+								row.
+								For Col this is aquired by the main thread 
+								through the code snippet:
+								for(int j = 0; j < a; j++){
+									values[j] = B[j][i];
+								}
+								Where B is the second array, j is the row 
+								number and i is the column number.  This is
+								going to pass the correct values because the
+								col threads are responsible for passing the
+								values in the collumns in array B, which this
+								does because the collumn number it takes from 
+								never changes.
+int m,c;						m is the size of the passed in array
+								c or r are the collomn or row number for this 
+								thread
+Semaphore* pb;					a print block mutex
+SynOneToOneChannel* channel;	the output channel
+
+
+Index:	
+char buf[200];					The internal buffer for outputing information
+								to the terminal window.
+int row,col;					row is the row number
+								col is the col number
+Semaphore* pb;					a print block mutex
+int b,e;						b is a boolean to tell the thread if it is on
+								the bottom of the array
+								e is the same, but for the right
+int* c;							the output int
+int value;						this thread's internal values
+SynOneToOneChannel* left;		left channel
+SynOneToOneChannel* down;		down channel
+SynOneToOneChannel* up;			up channel
+SynOneToOneChannel* right;		right channel
+
+Question: Why does thread Pi,j compute the inner (or dot) product of row i of 
+matrix A and column j of matrix B correctly?
+Answer:
+	The way the innner dot product is found is by adding the product
+	of each row,col "pair".  This implementation of matrix multiplication does
+	exactuly that, each time it takes in a pair, it multiplies them, then add
+	that answer to its internal values for the duration of the program.
+Question: Why are synchronous channels used rather than asynchronous channels? 
+A rigorous reasoning is required.
+Answer:
+	Asynchronous channels don't require a thread to wait for the reciever to 
+	take the message to continue, that means that the row and col, or any of 
+	the threads could run so fast that it would put a value into the channel, 
+	loop all the way around and overwrite that value before its intended
+	recipient could get the first value, so you start losing data and the 
+	program doesn't compute the correct matrix product.
+
+Question: Thread Pi,j terminates when it receives a EOD from its top and left 
+neighbors. Does this thread termination follow a particular pattern? Draw a 
+diagram of this termination pattern. Note that your diagram must be readable 
+when it is printed.
+Answer:
+	Yes, the termination does follow a particular pattern and to demonstrate I
+	will use a 2x2 matrix pluss its input threads:
+	   c1 c2
+	_______    _______     _______    _______    _______
+	| | | |    | |x| |     | |x|x|    | |x|x|    | |x|x|
+r1	| | | | -> |x| | |  -> |x|x| | -> |x|x|x| -> |x|x|x|
+r2	|_|_|_|    |_|_|_|     |x|_|_|    |x|x| |    |x|x|x|
+
+	This diagram shows that the input threads for a row,cow pair will terminate
+	first, then that pair and the pattern cascades through the matrix from top
+	left to bottom right.
+
+Question: Can a thread terminate once it receives a EOD from its left (or top) 
+neighbor and still deliver correct results. Explain your answer as clear as 
+possible.
+Answer:
+	Simply, no because the input from the top and the left should be 
+	synchronized, even if the number of collumns isn't the same as the number
+	of rows. So if a EOD signal is sent from one side, it would also be comming
+	from the other side because the inner dimentions of the two input matricies
+	must be equal, otherwise the program would have terminated before getting 
+	to the position where the number of inputs is different on each side of the
+	matrix
+
+
+
+

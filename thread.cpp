@@ -75,7 +75,7 @@ void Index::ThreadFunc(void){
 		write(1, buf, strlen(buf));
 		pb->Signal();
 		//decide to end the loop or use data
-		if(Down == EOD || Left == EOD){
+		if(Down == EOD && Left == EOD){
 			end = 1;
 		}else{
 			value += (Down * Left);
